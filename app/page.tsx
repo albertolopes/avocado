@@ -25,6 +25,11 @@ import {
   MessageSquare,
   User,
   Rocket,
+  Layout,
+  Layers as LayersIcon,
+  ShieldCheck,
+  Activity,
+  Box,
 } from 'lucide-react';
 import { Facebook, Twitter, Linkedin, Github } from 'lucide-react';
 import { Calendar } from 'lucide-react';
@@ -87,32 +92,39 @@ function hslToRgbString(h: number, s: number, l: number): string {
   return `${Math.round(f(0) * 255)}, ${Math.round(f(8) * 255)}, ${Math.round(f(4) * 255)}`;
 }
 
-function applyPrimaryColor(hue: number) {
-  const s = 90,
-    l = 58;
-  document.documentElement.style.setProperty('--color-primary', `hsl(${hue}, ${s}%, ${l}%)`);
-  document.documentElement.style.setProperty('--color-primary-light', `hsl(${hue}, ${s}%, 73%)`);
-  document.documentElement.style.setProperty('--color-primary-dark', `hsl(${hue}, ${s}%, 46%)`);
-  document.documentElement.style.setProperty('--color-primary-rgb', hslToRgbString(hue, s, l));
+function applyThemeColors(pHue: number, sHue: number) {
+  const s = 90, l = 58;
+  // Primary (Cyan/Indigo base)
+  document.documentElement.style.setProperty('--color-primary', `hsl(${pHue}, ${s}%, ${l}%)`);
+  document.documentElement.style.setProperty('--color-primary-light', `hsl(${pHue}, ${s}%, 73%)`);
+  document.documentElement.style.setProperty('--color-primary-dark', `hsl(${pHue}, ${s}%, 46%)`);
+  document.documentElement.style.setProperty('--color-primary-rgb', hslToRgbString(pHue, s, l));
+
+  // Secondary (Magenta/Pink base)
+  document.documentElement.style.setProperty('--color-secondary', `hsl(${sHue}, 80%, 55%)`);
+  document.documentElement.style.setProperty('--color-secondary-light', `hsl(${sHue}, 80%, 75%)`);
+  document.documentElement.style.setProperty('--color-secondary-dark', `hsl(${sHue}, 80%, 45%)`);
+  document.documentElement.style.setProperty('--color-secondary-rgb', hslToRgbString(sHue, 80, 55));
 }
 
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [billingAnnual, setBillingAnnual] = useState(false);
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState('Todos');
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [colorStyle, setColorStyle] = useState<'gradient' | 'flat'>('gradient');
-  const [activeColor, setActiveColor] = useState(250);
+  const [activeColor, setActiveColor] = useState(185);
 
   useEffect(() => {
     const savedTheme = (getCookie('vibe_theme') as 'dark' | 'light') || 'dark';
     const savedStyle = (getCookie('vibe_style') as 'gradient' | 'flat') || 'gradient';
-    const savedColor = parseInt(getCookie('vibe_color') || '250', 10);
+    const savedColor = parseInt(getCookie('vibe_color') || '185', 10);
+    const savedSecondary = parseInt(getCookie('vibe_color_secondary') || '320', 10);
 
     setTheme(savedTheme);
     setColorStyle(savedStyle);
@@ -120,13 +132,7 @@ export default function HomePage() {
 
     document.documentElement.setAttribute('data-theme', savedTheme);
     document.documentElement.setAttribute('data-style', savedStyle);
-    applyPrimaryColor(savedColor);
-
-    const vars = getThemeVars();
-    document.documentElement.style.setProperty('--color-secondary', vars['--color-secondary']);
-    document.documentElement.style.setProperty('--color-secondary-light', vars['--color-secondary-light']);
-    document.documentElement.style.setProperty('--color-secondary-dark', vars['--color-secondary-dark']);
-    document.documentElement.style.setProperty('--color-secondary-rgb', vars['--color-secondary-rgb']);
+    applyThemeColors(savedColor, savedSecondary);
   }, []);
 
   useEffect(() => {
@@ -154,8 +160,11 @@ export default function HomePage() {
 
   const changeColor = useCallback((hue: number) => {
     setActiveColor(hue);
-    applyPrimaryColor(hue);
+    // Use a color shift for secondary if we only have one hue from the picker
+    const sHue = (hue + 135) % 360;
+    applyThemeColors(hue, sHue);
     setCookie('vibe_color', String(hue));
+    setCookie('vibe_color_secondary', String(sHue));
   }, []);
 
   return (
@@ -163,21 +172,21 @@ export default function HomePage() {
       <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
         <div className="container header__inner">
           <a href="#" className="header__logo">
-            <span>Vibe</span>
+            <img src="/logo.png" alt="Avocado Logo" width={80} height={80} />
+            <span>Avocado</span>
           </a>
 
           <nav className="header__nav">
-            <a href="#features">Features</a>
-            <a href="#about">About</a>
-            <a href="#services">Services</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
+            <a href="#features">Funcionalidades</a>
+            <a href="#services">Serviços</a>
+            <a href="#sobre-mim">Sobre Mim</a>
+            <a href="#projects">Projetos</a>
+            <a href="#contact">Contato</a>
           </nav>
 
           <div className="header__actions">
-            <a href="#contact" className="btn btn--primary" style={{ padding: '10px 24px', fontSize: '14px' }}>
-              Get Started
+            <a href="#contact" className="btn btn--primary header__cta" style={{ padding: '10px 24px', fontSize: '14px' }}>
+              Solicitar Orçamento
             </a>
             <button className="header__hamburger" onClick={() => setMobileNav(true)} aria-label="Open menu">
               <span />
@@ -191,16 +200,18 @@ export default function HomePage() {
       <div className={`mobile-nav ${mobileNav ? 'open' : ''}`}>
         <button
           onClick={() => setMobileNav(false)}
-          style={{ position: 'absolute', top: 32, right: 32, color: 'var(--text)' }}
+          className="mobile-nav__close"
           aria-label="Close menu"
         >
           <X size={32} />
         </button>
-        {['Features', 'About', 'Services', 'Pricing', 'Projects', 'Contact'].map((item) => (
-          <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileNav(false)}>
-            {item}
-          </a>
-        ))}
+        <div className="mobile-nav__links">
+          {['Funcionalidades', 'Serviços', 'Sobre Mim', 'Projetos', 'Contato'].map((item) => (
+            <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} onClick={() => setMobileNav(false)}>
+              {item}
+            </a>
+          ))}
+        </div>
       </div>
 
       <main>
@@ -215,56 +226,45 @@ export default function HomePage() {
             <div className="hero__inner">
               <div className="hero__content animate-in">
                 <div className="hero__badge">
-                  <Rocket size={14} /> We Build Digital Experiences
+                  <Rocket size={14} /> Especialista em Engenharia de Software
                 </div>
                 <h1 className="hero__title">
-                  Crafting <span>Premium Digital</span> Solutions for Startups
+                  Criando <span>Sistemas Robustos</span> para Negócios Digitais
                 </h1>
                 <p className="hero__text">
-                  We specialize in UI/UX design, web development, and digital marketing. Empowering
-                  businesses with cutting-edge technology and stunning design.
+                  Transformamos suas ideias em soluções escaláveis com arquitetura de ponta
+                  e foco total em performance. Excelência técnica em cada linha de código.
                 </p>
                 <div className="hero__actions">
                   <a href="#contact" className="btn btn--primary">
-                    Get Started Now <ArrowRight size={18} />
+                    Solicitar Orçamento <ArrowRight size={18} />
                   </a>
                   <a href="#about" className="btn btn--outline">
-                    Learn More
+                    Conheça a Avocado
                   </a>
                 </div>
 
-                <div className="hero__stats">
-                  <div>
-                    <div className="hero__stat-value">500+</div>
-                    <div className="hero__stat-label">Projects Completed</div>
-                  </div>
-                  <div>
-                    <div className="hero__stat-value">120+</div>
-                    <div className="hero__stat-label">Happy Clients</div>
-                  </div>
-                  <div>
-                    <div className="hero__stat-value">15+</div>
-                    <div className="hero__stat-label">Awards Won</div>
-                  </div>
-                </div>
+
               </div>
 
               <div className="hero__image animate-in" style={{ animationDelay: '0.2s' }}>
-                <img src={IMAGES.heroSide} alt="Digital workspace" />
+                <img src={IMAGES.heroSide} alt="Trabalho digital" />
               </div>
             </div>
           </div>
         </section>
 
+
+
         <section className="section section--gradient" id="features">
           <div className="container">
             <div className="section-header">
-              <div className="section-header__badge">Why Choose Us</div>
+              <div className="section-header__badge">Por que nos escolher</div>
               <h2 className="section-header__title">
-                Powerful Features to <span className="gradient-text">Elevate</span> Your Business
+                Recursos poderosos para <span className="gradient-text">escalar</span> seu negócio
               </h2>
               <p className="section-header__text">
-                Everything you need to launch and scale your startup with confidence.
+                Tudo o que você precisa para lançar e evoluir seu software com confiança.
               </p>
             </div>
 
@@ -272,33 +272,33 @@ export default function HomePage() {
               {[
                 {
                   icon: <Headphones size={28} />,
-                  title: '24/7 Support',
-                  text: 'Round-the-clock expert assistance to keep your business running smoothly.',
+                  title: 'Suporte Devops',
+                  text: 'Assistência especializada contínua para manter sua infraestrutura rodando sem falhas.',
                 },
                 {
                   icon: <Shield size={28} />,
-                  title: 'Enterprise Security',
-                  text: 'Bank-grade encryption and security measures to protect your data.',
+                  title: 'Segurança de Elite',
+                  text: 'Padrões bancários de criptografia e medidas de segurança para proteger seus dados de ponta a ponta.',
                 },
                 {
                   icon: <Users size={28} />,
-                  title: 'Team Collaboration',
-                  text: 'Seamless tools for your team to work together effectively from anywhere.',
+                  title: 'Metodologia Ágil',
+                  text: 'Entregas recorrentes e transparência absoluta durante todo o processo de desenvolvimento.',
                 },
                 {
                   icon: <Zap size={28} />,
-                  title: 'Lightning Fast',
-                  text: 'Optimized for speed with edge delivery and intelligent caching.',
+                  title: 'Performance Extrema',
+                  text: 'Sistemas otimizados para velocidade, utilizando as tecnologias mais modernas do mercado.',
                 },
                 {
-                  icon: <Palette size={28} />,
-                  title: 'Fully Customizable',
-                  text: 'Tailor every aspect to match your brand identity perfectly.',
+                  icon: <Activity size={28} />,
+                  title: 'Observabilidade',
+                  text: 'Monitoramento contínuo para garantir que seu sistema esteja sempre estável e performático.',
                 },
                 {
                   icon: <RefreshCw size={28} />,
-                  title: 'Regular Updates',
-                  text: 'Continuous improvements and new features delivered seamlessly.',
+                  title: 'Arquitetura Moderna',
+                  text: 'Código limpo, sustentável e fácil de manter para que sua aplicação cresça sem gargalos.',
                 },
               ].map((f, i) => (
                 <div className="feature-card" key={i}>
@@ -317,30 +317,29 @@ export default function HomePage() {
               <div className="about__images">
                 <div className="about__img-glow" />
                 <div className="about__img-main">
-                  <img src={IMAGES.aboutMain} alt="Team working together" />
+                  <img src={IMAGES.aboutMain} alt="Equipe trabalhando" />
                 </div>
                 <div className="about__img-float animate-float">
-                  <img src={IMAGES.aboutFloat} alt="Team collaboration" />
+                  <img src={IMAGES.aboutFloat} alt="Colaboração" />
                 </div>
               </div>
 
               <div>
-                <div className="about__badge">About Us</div>
+                <div className="about__badge">A Avocado</div>
                 <h2 className="about__title">
-                  We Make Our Customers Happy by Giving{' '}
-                  <span className="gradient-text">Best Services</span>
+                  Foco absoluto em <span className="gradient-text">Qualidade e Performance</span>
                 </h2>
                 <p className="about__text">
-                  With over a decade of experience, we build digital products that are beautiful,
-                  functional, and drive real business results. Our passion is turning complex
-                  challenges into elegant solutions.
+                  Com anos de mercado, construímos produtos digitais que são belos,
+                  funcionais e geram resultados reais para o seu negócio. Nossa paixão é
+                  transformar desafios complexos em soluções elegantes.
                 </p>
                 <div className="about__list">
                   {[
-                    'Expert team of designers & developers',
-                    'Agile methodology for fast delivery',
-                    'Transparent communication & reporting',
-                    '100% satisfaction guaranteed',
+                    'Especialista em diversas stacks modernas',
+                    'Foco em arquitetura limpa e escalável',
+                    'Entrega contínua e DevOps integrados',
+                    'Consultoria focada em viabilidade técnica',
                   ].map((item, i) => (
                     <div className="about__list-item" key={i}>
                       <div className="about__list-icon">
@@ -351,48 +350,53 @@ export default function HomePage() {
                   ))}
                 </div>
                 <a href="#contact" className="btn btn--primary">
-                  Get In Touch <ArrowRight size={18} />
+                  Fale com um Especialista <ArrowRight size={18} />
                 </a>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="section section--gradient" id="team">
+        <section className="section section--gradient" id="sobre-mim">
           <div className="container">
             <div className="section-header">
-              <div className="section-header__badge">Our Team</div>
+              <div className="section-header__badge">Perfil Profissional</div>
               <h2 className="section-header__title">
-                Meet Our <span className="gradient-text">Creative</span> Team
+                Sobre <span className="gradient-text">Mim</span>
               </h2>
-              <p className="section-header__text">
-                Talented people who make the magic happen every single day.
-              </p>
             </div>
 
-            <div className="team__grid">
-              {[
-                { name: 'Olivia Andrium', role: 'Product Manager', img: IMAGES.team1 },
-                { name: 'James Cameron', role: 'Lead Designer', img: IMAGES.team2 },
-                { name: 'Ava Richardson', role: 'Senior Developer', img: IMAGES.team3 },
-              ].map((m, i) => (
-                <div className="team-card" key={i}>
-                  <div className="team-card__img">
-                    <img src={m.img} alt={m.name} />
-                    <div className="team-card__overlay">
-                      <div className="team-card__socials">
-                        {[Facebook, Twitter, Linkedin].map((Icon, j) => (
-                          <a href="#" className="team-card__social" key={j}>
-                            <Icon size={18} />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <h4 className="team-card__name">{m.name}</h4>
-                  <p className="team-card__role">{m.role}</p>
+            <div className="about-me__main about-me--full">
+              <div className="about-me__profile">
+                <div className="about-me__image">
+                  <img src={IMAGES.team2} alt="Alberto Silva Lopes" />
                 </div>
-              ))}
+                <div className="about-me__info">
+                  <h3 className="about-me__name">Alberto Silva Lopes</h3>
+                  <p className="about-me__role">Engenheiro de Software & Especialista Backend</p>
+                  <div className="about-me__socials">
+                    <a href="https://linkedin.com/in/alberto-lopes-159189126" target="_blank" rel="noopener noreferrer" className="about-me__social">
+                      <Linkedin size={20} />
+                    </a>
+                    <a href="https://github.com/albertolopes" target="_blank" rel="noopener noreferrer" className="about-me__social">
+                      <Github size={20} />
+                    </a>
+                    <a href="mailto:albertolopes@mail.com" className="about-me__social">
+                      <Mail size={20} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="about-me__text-content">
+                <h4 className="about-me__subtitle">Resumo Profissional</h4>
+                <p className="about-me__text">
+                  Desenvolvedor de software com vasta experiência em arquiteturas modernas, especialmente em
+                  microserviços, e forte habilidade para solucionar problemas complexos com eficiência e criatividade.
+                  Comprometido com a entrega de código limpo e escalável, sempre alinhado às melhores práticas do
+                  mercado.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -400,12 +404,12 @@ export default function HomePage() {
         <section className="section" id="services">
           <div className="container">
             <div className="section-header">
-              <div className="section-header__badge">Our Services</div>
+              <div className="section-header__badge">Nossos Serviços</div>
               <h2 className="section-header__title">
-                Premium Quality <span className="gradient-text">Services</span>
+                Soluções Digitais de <span className="gradient-text">Alta Qualidade</span>
               </h2>
               <p className="section-header__text">
-                Comprehensive digital solutions tailored for modern businesses.
+                Desenvolvimento completo e personalizado para o seu negócio moderno.
               </p>
             </div>
 
@@ -413,33 +417,33 @@ export default function HomePage() {
               {[
                 {
                   icon: <Code size={28} />,
-                  title: 'Web Development',
-                  text: 'Full-stack applications built with modern frameworks and best practices.',
+                  title: 'Desenvolvimento Web',
+                  text: 'Aplicações full-stack robustas construídas com as melhores práticas.',
                 },
                 {
-                  icon: <Palette size={28} />,
-                  title: 'UI/UX Design',
-                  text: 'User-centered designs that are beautiful, intuitive, and engaging.',
+                  icon: <Box size={28} />,
+                  title: 'Automação de Processos',
+                  text: 'Sistemas inteligentes para otimizar fluxos de trabalho e reduzir custos operacionais.',
                 },
                 {
-                  icon: <Megaphone size={28} />,
-                  title: 'Digital Marketing',
-                  text: 'Data-driven strategies to grow your brand and reach your audience.',
+                  icon: <Rocket size={28} />,
+                  title: 'Produtos MVP',
+                  text: 'Lançamos sua ideia rapidamente no mercado com o essencial para validar o negócio.',
                 },
                 {
-                  icon: <Layers size={28} />,
-                  title: 'Brand Identity',
-                  text: 'Complete branding solutions from logo design to brand guidelines.',
+                  icon: <LayersIcon size={28} />,
+                  title: 'Arquitetura Backend',
+                  text: 'Sistemas escaláveis e seguros para suportar o crescimento da sua empresa.',
                 },
                 {
-                  icon: <Globe size={28} />,
-                  title: 'SEO Optimization',
-                  text: 'Boost your rankings and drive organic traffic to your website.',
+                  icon: <Layout size={28} />,
+                  title: 'Websites Institucionais',
+                  text: 'Páginas de alta conversão para destacar sua marca no ambiente digital.',
                 },
                 {
                   icon: <Cpu size={28} />,
-                  title: 'AI Solutions',
-                  text: 'Intelligent automation and AI integration for modern businesses.',
+                  title: 'Consultoria Tech',
+                  text: 'Orientação especializada para escolha de tecnologias e otimização de processos.',
                 },
               ].map((s, i) => (
                 <div className="service-card" key={i}>
@@ -452,107 +456,19 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="section section--gradient" id="pricing">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-header__badge">Pricing Plans</div>
-              <h2 className="section-header__title">
-                Simple, <span className="gradient-text">Transparent</span> Pricing
-              </h2>
-              <p className="section-header__text">No hidden fees. Pick the plan that fits your needs.</p>
-            </div>
 
-            <div className="pricing__toggle">
-              <span className="pricing__toggle-label">Monthly</span>
-              <button
-                className={`pricing__toggle-switch ${billingAnnual ? 'active' : ''}`}
-                onClick={() => setBillingAnnual(!billingAnnual)}
-                aria-label="Toggle billing"
-              />
-              <span className="pricing__toggle-label">
-                Annually <span className="gradient-text" style={{ fontSize: 12 }}>(Save 20%)</span>
-              </span>
-            </div>
-
-            <div className="pricing__grid">
-              {[
-                {
-                  name: 'Starter',
-                  monthly: 29,
-                  featured: false,
-                  features: ['5 Projects', '10 GB Storage', 'Basic Analytics', 'Email Support'],
-                },
-                {
-                  name: 'Growth',
-                  monthly: 59,
-                  featured: true,
-                  features: [
-                    'Unlimited Projects',
-                    '100 GB Storage',
-                    'Advanced Analytics',
-                    'Priority Support',
-                    'Custom Domain',
-                  ],
-                },
-                {
-                  name: 'Enterprise',
-                  monthly: 139,
-                  featured: false,
-                  features: [
-                    'Everything in Growth',
-                    'Unlimited Storage',
-                    'Dedicated Manager',
-                    '24/7 Phone Support',
-                    'SLA Guarantee',
-                  ],
-                },
-              ].map((plan, i) => {
-                const price = billingAnnual ? Math.round(plan.monthly * 12 * 0.8) : plan.monthly;
-                return (
-                  <div
-                    className={`pricing-card ${plan.featured ? 'pricing-card--featured' : ''}`}
-                    key={i}
-                  >
-                    <h4 className="pricing-card__name">{plan.name}</h4>
-                    <div className="pricing-card__price">
-                      <span className="pricing-card__amount">${price}</span>
-                      <span className="pricing-card__period">/{billingAnnual ? 'year' : 'month'}</span>
-                    </div>
-                    <p className="pricing-card__desc">No credit card required</p>
-                    <div className="pricing-card__features">
-                      {plan.features.map((f, j) => (
-                        <div className="pricing-card__feature" key={j}>
-                          <Check size={16} className="pricing-card__check" />
-                          <span>{f}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <a
-                      href="#"
-                      className={`btn ${plan.featured ? 'btn--primary' : 'btn--outline'}`}
-                      style={{ width: '100%' }}
-                    >
-                      Start Free Trial
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
         <section className="section" id="projects">
           <div className="container">
             <div className="section-header">
-              <div className="section-header__badge">Portfolio</div>
+              <div className="section-header__badge">Portfólio</div>
               <h2 className="section-header__title">
-                Our Latest <span className="gradient-text">Projects</span>
+                Últimos <span className="gradient-text">Projetos em que Atuamos</span>
               </h2>
-              <p className="section-header__text">Showcasing our best work across diverse industries.</p>
             </div>
 
             <div className="projects__tabs">
-              {['All', 'Branding', 'Development', 'Marketing'].map((tab) => (
+              {['Todos', 'Backend', 'Sistemas', 'Apps'].map((tab) => (
                 <button
                   key={tab}
                   className={`projects__tab ${activeTab === tab ? 'active' : ''}`}
@@ -565,184 +481,53 @@ export default function HomePage() {
 
             <div className="projects__grid">
               {[
-                { title: 'Brand Redesign', cat: 'Branding', img: IMAGES.project1, tags: ['Branding'] },
-                { title: 'E-Commerce Platform', cat: 'Development', img: IMAGES.project2, tags: ['Development'] },
-                { title: 'Growth Campaign', cat: 'Marketing', img: IMAGES.project3, tags: ['Marketing'] },
                 {
-                  title: 'Analytics Dashboard',
-                  cat: 'Development',
-                  img: IMAGES.project4,
-                  tags: ['Development', 'Branding'],
+                  title: 'Aplicativo Sebrae',
+                  cat: 'Finanças & Negócios',
+                  img: '/sebrae.png',
+                  tags: ['Apps', 'Backend'],
+                  link: 'https://sebrae.com.br/sites/PortalSebrae/aplicativosebrae',
                 },
-              ].filter((p) => activeTab === 'All' || p.tags.includes(activeTab))
+                {
+                  title: 'Qualicorp',
+                  cat: 'Saúde & Seguros',
+                  img: '/qualicorp.png',
+                  tags: ['Sistemas', 'Backend'],
+                  link: 'https://www.qualicorp.com.br/',
+                },
+                {
+                  title: 'Institucional Apemigos',
+                  cat: 'Impacto Social / ONG',
+                  img: '/apemigos.png',
+                  tags: ['Sistemas', 'Apps'],
+                  link: 'https://apemigosbrasil.org.br/',
+                },
+              ].filter((p) => activeTab === 'Todos' || p.tags.includes(activeTab))
                 .map((p, i) => (
-                  <div className="project-card" key={i}>
+                  <a href={p.link} target="_blank" rel="noopener noreferrer" className="project-card" key={i}>
                     <img src={p.img} alt={p.title} />
                     <div className="project-card__overlay">
                       <h4 className="project-card__title">{p.title}</h4>
                       <span className="project-card__cat">{p.cat}</span>
                     </div>
-                  </div>
+                  </a>
                 ))}
             </div>
           </div>
         </section>
 
-        <section className="section section--gradient" id="testimonials">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-header__badge">Testimonials</div>
-              <h2 className="section-header__title">
-                What Our <span className="gradient-text">Clients</span> Say
-              </h2>
-              <p className="section-header__text">Real feedback from real people who trust us.</p>
-            </div>
 
-            {(() => {
-              const testimonials = [
-                {
-                  quote:
-                    'Vibe transformed our online presence completely. Their team delivered a stunning website that exceeded our expectations and doubled our conversion rate.',
-                  name: 'David Smith',
-                  position: 'CEO, TechVenture',
-                  img: IMAGES.testimonial,
-                },
-                {
-                  quote:
-                    'Working with Vibe was an absolute pleasure. They understood our vision perfectly and delivered a product that our users love. Highly recommended!',
-                  name: 'Sarah Chen',
-                  position: 'Founder, StartupXYZ',
-                  img: IMAGES.team3,
-                },
-                {
-                  quote:
-                    'The quality of work and attention to detail is unmatched. Vibe helped us build a platform that handles millions of users seamlessly.',
-                  name: 'Michael Torres',
-                  position: 'CTO, ScaleUp Inc',
-                  img: IMAGES.team2,
-                },
-              ];
-              const t = testimonials[testimonialIndex];
-              return (
-                <>
-                  <div className="testimonial-card">
-                    <div className="testimonial-card__stars">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={20} fill="currentColor" />
-                      ))}
-                    </div>
-                    <p className="testimonial-card__quote">&ldquo;{t.quote}&rdquo;</p>
-                    <div className="testimonial-card__author">
-                      <div className="testimonial-card__avatar">
-                        <img src={t.img} alt={t.name} />
-                      </div>
-                      <div>
-                        <div className="testimonial-card__name">{t.name}</div>
-                        <div className="testimonial-card__position">{t.position}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="testimonial__dots">
-                    {testimonials.map((_, i) => (
-                      <button
-                        key={i}
-                        className={`testimonial__dot ${i === testimonialIndex ? 'active' : ''}`}
-                        onClick={() => setTestimonialIndex(i)}
-                        aria-label={`Testimonial ${i + 1}`}
-                      />
-                    ))}
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        </section>
 
-        <section className="stats">
-          <div className="container">
-            <div className="stats__grid">
-              {[
-                { value: '785+', label: 'Global Brands' },
-                { value: '533+', label: 'Happy Clients' },
-                { value: '99%', label: 'Satisfaction Rate' },
-                { value: '50+', label: 'Team Members' },
-              ].map((s, i) => (
-                <div key={i}>
-                  <div className="stats__value">{s.value}</div>
-                  <div className="stats__label">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        <section className="section" id="blog">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-header__badge">Our Blog</div>
-              <h2 className="section-header__title">
-                Latest <span className="gradient-text">Insights</span>
-              </h2>
-              <p className="section-header__text">
-                Stay updated with our latest articles and industry trends.
-              </p>
-            </div>
-
-            <div className="blog__grid">
-              {[
-                {
-                  title: 'Free Advertising Strategies for Your Online Business',
-                  date: 'Mar 10, 2026',
-                  author: 'Olivia A.',
-                  img: IMAGES.blog1,
-                },
-                {
-                  title: '9 Simple Ways to Improve Your Design Skills Today',
-                  date: 'Mar 5, 2026',
-                  author: 'James C.',
-                  img: IMAGES.blog2,
-                },
-                {
-                  title: 'Tips to Quickly Boost Your Coding Productivity',
-                  date: 'Feb 28, 2026',
-                  author: 'Ava R.',
-                  img: IMAGES.blog3,
-                },
-              ].map((b, i) => (
-                <div className="blog-card" key={i}>
-                  <div className="blog-card__img">
-                    <img src={b.img} alt={b.title} />
-                  </div>
-                  <div className="blog-card__body">
-                    <div className="blog-card__meta">
-                      <span>
-                        <User size={14} /> {b.author}
-                      </span>
-                      <span>
-                        <Calendar size={14} /> {b.date}
-                      </span>
-                    </div>
-                    <h4 className="blog-card__title">
-                      <a href="#">{b.title}</a>
-                    </h4>
-                    <a href="#" className="blog-card__link">
-                      Read More <ArrowRight size={14} />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         <section className="section section--gradient" id="contact">
           <div className="container">
             <div className="section-header">
-              <div className="section-header__badge">Get In Touch</div>
+              <div className="section-header__badge">Contato</div>
               <h2 className="section-header__title">
-                Let&apos;s <span className="gradient-text">Connect</span>
+                Vamos <span className="gradient-text">Conversar?</span>
               </h2>
-              <p className="section-header__text">Have a project in mind? We&apos;d love to hear from you.</p>
+              <p className="section-header__text">Tem um projeto em mente? Adoraríamos ajudar a tirar do papel.</p>
             </div>
 
             <div className="contact__inner">
@@ -750,26 +535,21 @@ export default function HomePage() {
                 {[
                   {
                     icon: <Mail size={20} />,
-                    label: 'Email Address',
-                    value: 'hello@vibetemplate.com',
-                    href: 'mailto:hello@vibetemplate.com',
+                    label: 'Email para Contato',
+                    value: 'contato@avocadotech.site',
+                    href: 'mailto:contato@avocadotech.site',
                   },
                   {
                     icon: <MapPin size={20} />,
-                    label: 'Office Location',
-                    value: '76/A, Green Valley, California, USA',
+                    label: 'Onde Estamos',
+                    value: 'Grande Colorado, Sobradinho, DF, Brasil',
                   },
                   {
                     icon: <Phone size={20} />,
-                    label: 'Phone Number',
-                    value: '+1 (800) 123-4567',
-                    href: 'tel:+18001234567',
-                  },
-                  {
-                    icon: <MessageSquare size={20} />,
-                    label: 'Live Chat',
-                    value: 'Available Mon-Fri, 9AM-6PM PST',
-                  },
+                    label: 'Whatsapp/Telefone',
+                    value: '+55 (61) 9 8118-1419',
+                    href: 'tel:+5561981181419',
+                  }
                 ].map((item, i) => (
                   <div className="contact__info-item" key={i}>
                     <div className="contact__info-label">{item.label}</div>
@@ -785,20 +565,35 @@ export default function HomePage() {
               </div>
 
               <div className="contact__form">
+                {/* 
                 <form onSubmit={(e) => e.preventDefault()}>
                   <div className="contact__form-row">
-                    <input className="contact__input" type="text" placeholder="Full Name" />
-                    <input className="contact__input" type="email" placeholder="Email Address" />
+                    <input className="contact__input" type="text" placeholder="Nome Completo" />
+                    <input className="contact__input" type="email" placeholder="Seu E-mail" />
                   </div>
                   <div className="contact__form-row">
-                    <input className="contact__input" type="text" placeholder="Phone Number" />
-                    <input className="contact__input" type="text" placeholder="Subject" />
+                    <input className="contact__input" type="text" placeholder="WhatsApp" />
+                    <input className="contact__input" type="text" placeholder="Assunto" />
                   </div>
-                  <textarea className="contact__input" placeholder="Your Message" rows={5} />
+                  <textarea className="contact__input" placeholder="Conte-nos sobre o seu projeto" rows={5} />
                   <button type="submit" className="btn btn--primary" style={{ width: '100%' }}>
-                    Send Message <ArrowRight size={18} />
+                    Enviar Mensagem <ArrowRight size={18} />
                   </button>
                 </form>
+                */}
+                <div className="contact__cta-card">
+                  <h3 className="contact__cta-title">Impulsione seu Projeto</h3>
+                  <p className="contact__cta-text">
+                    Estou disponível para novas parcerias e consultorias técnicas especializadas.
+                    Se você busca transformar sua ideia em um software robusto e escalável,
+                    o canal está aberto.
+                  </p>
+                  <div className="contact__cta-methods">
+                    <a href="https://wa.me/5561981181419" target="_blank" rel="noopener noreferrer" className="btn btn--primary" style={{ width: '100%' }}>
+                      Chamar no WhatsApp <MessageSquare size={18} />
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -806,12 +601,12 @@ export default function HomePage() {
 
         <section className="cta">
           <div className="container">
-            <h2 className="cta__title">Join 5,000+ Startups Growing with Vibe</h2>
+            <h2 className="cta__title">Pronto para acelerar seu negócio digital?</h2>
             <p className="cta__text">
-              Ready to transform your digital presence? Let&apos;s build something amazing together.
+              Vamos construir algo incrível juntos. Nossa equipe está pronta para dar o próximo passo com você.
             </p>
             <a href="#contact" className="btn btn--white">
-              Get Started Now <ArrowRight size={18} />
+              Começar Agora <ArrowRight size={18} />
             </a>
           </div>
         </section>
@@ -822,10 +617,11 @@ export default function HomePage() {
           <div className="footer__grid">
             <div>
               <a href="#" className="header__logo">
-                <span>Vibe</span>
+                <img src="/logo.png" alt="Avocado Logo" width={40} height={40} />
+                <span>Avocado</span>
               </a>
               <p className="footer__brand-text">
-                Crafting premium digital experiences for modern startups and businesses worldwide.
+                Desenvolvimento de software premium para empresas inovadoras e startups modernas.
               </p>
               <div className="footer__socials">
                 {[Facebook, Twitter, Linkedin, Github].map((Icon, i) => (
@@ -837,138 +633,47 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="footer__heading">Quick Links</h4>
+              <h4 className="footer__heading">Links Rápidos</h4>
               <div className="footer__links">
-                <a href="#">Home</a>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#about">About Us</a>
+                <a href="#">Início</a>
+                <a href="#features">Funcionalidades</a>
+                <a href="#sobre-mim">Sobre Mim</a>
               </div>
             </div>
 
             <div>
-              <h4 className="footer__heading">Services</h4>
+              <h4 className="footer__heading">Serviços</h4>
               <div className="footer__links">
-                <a href="#">Web Development</a>
-                <a href="#">UI/UX Design</a>
-                <a href="#">Digital Marketing</a>
-                <a href="#">Brand Identity</a>
+                <a href="#">Engenharia de Backend</a>
+                <a href="#">Desenvolvimento de APIs</a>
+                <a href="#">Cloud & DevOps</a>
+                <a href="#">Consultoria em Arquitetura</a>
               </div>
             </div>
 
             <div>
-              <h4 className="footer__heading">Support</h4>
+              <h4 className="footer__heading">Suporte</h4>
               <div className="footer__links">
-                <a href="#">Documentation</a>
-                <a href="#">FAQs</a>
-                <a href="#">Contact Us</a>
-                <a href="#">Privacy Policy</a>
+                <a href="#">Documentação</a>
+                <a href="#">Perguntas Frequentes</a>
+                <a href="#">Fale Conosco</a>
+                <a href="#">Política de Privacidade</a>
               </div>
             </div>
 
-            <div>
-              <h4 className="footer__heading">Newsletter</h4>
-              <p className="footer__newsletter-text">Subscribe to receive updates and tips.</p>
-              <form className="footer__newsletter-form" onSubmit={(e) => e.preventDefault()}>
-                <input className="footer__newsletter-input" type="email" placeholder="Email address" />
-                <button className="footer__newsletter-btn" type="submit">
-                  Subscribe
-                </button>
-              </form>
-            </div>
+
           </div>
 
           <div className="footer__bottom">
-            <span className="footer__bottom-text">&copy; 2026 Vibe. All rights reserved.</span>
+            <span className="footer__bottom-text">&copy; 2026 Avocado. Todos os direitos reservados.</span>
             <div className="footer__bottom-links">
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
+              <a href="#">Política de Privacidade</a>
+              <a href="#">Termos de Uso</a>
               <a href="#">Cookies</a>
             </div>
           </div>
         </div>
       </footer>
-
-      <div
-        className={`settings-panel__backdrop ${settingsOpen ? 'open' : ''}`}
-        onClick={() => setSettingsOpen(false)}
-      />
-      <div className={`settings-panel ${settingsOpen ? 'open' : ''}`}>
-        <div className="settings-panel__header">
-          <h3 className="settings-panel__title">
-            <Settings
-              size={18}
-              style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 6 }}
-            />{' '}
-            Settings
-          </h3>
-          <button
-            className="settings-panel__close"
-            onClick={() => setSettingsOpen(false)}
-            aria-label="Close settings"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="settings-group">
-          <div className="settings-group__label">Appearance</div>
-          <div className="settings-row">
-            <div>
-              <div className="settings-row__label">
-                {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-              </div>
-              <div className="settings-row__desc">Switch between dark and light themes</div>
-            </div>
-            <button
-              className={`toggle-switch ${theme === 'light' ? 'active' : ''}`}
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-            />
-          </div>
-          <div className="settings-row">
-            <div>
-              <div className="settings-row__label">
-                {colorStyle === 'gradient' ? '🎨 Gradient' : '🟦 Flat'}
-              </div>
-              <div className="settings-row__desc">Toggle gradient or flat color style</div>
-            </div>
-            <button
-              className={`toggle-switch ${colorStyle === 'flat' ? 'active' : ''}`}
-              onClick={toggleStyle}
-              aria-label="Toggle color style"
-            />
-          </div>
-        </div>
-
-        <div className="settings-group">
-          <div className="settings-group__label">Primary Color</div>
-          <div className="settings-colors">
-            {COLOR_PRESETS.map((p) => (
-              <button
-                key={p.hue}
-                className={`settings-color-btn ${activeColor === p.hue ? 'active' : ''}`}
-                style={{ background: p.color }}
-                onClick={() => changeColor(p.hue)}
-                title={p.name}
-                aria-label={`Set primary color to ${p.name}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
-          Settings are saved in cookies and will persist across page reloads.
-        </div>
-      </div>
-
-      <button
-        className="settings-toggle"
-        onClick={() => setSettingsOpen(true)}
-        aria-label="Open settings"
-      >
-        <Settings size={22} />
-      </button>
 
       <button
         className={`back-to-top ${showBackToTop ? 'visible' : ''}`}

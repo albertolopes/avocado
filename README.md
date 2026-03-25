@@ -1,114 +1,51 @@
-# Vibe
+# Avocado Tech — Portfolio Profissional
 
-A modern **Next.js 16** startup template with **React 19**, **TypeScript**, and the App Router. Single-page landing with theme switcher, color picker, and responsive sections (hero, features, pricing, contact, and more).
+Este é o site institucional e portfólio de **Alberto Silva Lopes**, operando sob a marca **Avocado Tech**. O projeto foi desenvolvido para apresentar uma identidade visual moderna, técnica e de alta performance, refletindo a expertise em engenharia de software e consultoria técnica.
 
-**Live site:** [vibe.infyways.com](https://vibe.infyways.com)
+## 🚀 Tecnologias
 
-## Prerequisites
+O projeto utiliza o que há de mais moderno no ecossistema web:
 
-- **Node.js** 20.9 or later ([download](https://nodejs.org/))
-- **npm**, **pnpm**, or **yarn**
+- **Next.js 16** (App Router) — Performance e escalabilidade.
+- **React 19** — Interface declarativa e eficiente.
+- **TypeScript** — Segurança e produtividade no desenvolvimento.
+- **Lucide React** — Conjunto de ícones elegantes e consistentes.
+- **Custom CSS Design System** — Sistema de design proprietário com variáveis CSS para controle total de temas e cores.
 
-## Quick Start
+## ✨ Funcionalidades e Destaques
 
-### 1. Clone the repository
+- **Identidade Visual Premium**: Paleta de cores exclusiva baseada em **Ciano (Cyan)** e **Magenta**, aplicada harmonicamente em todo o site.
+- **Totalmente Responsivo**: Experiência otimizada para desktops, tablets e dispositivos móveis (layout "travado" contra rolagem horizontal).
+- **SEO Otimizado**: Metadados configurados para indexação no Google, incluindo OpenGraph e Twitter Cards para compartilhamento social impactante.
+- **Portfólio de Projetos Reais**: Seção dedicada a projetos de grande porte como **Qualicorp**, **Sebrae** e **Apemigos**, com links externos e descrições técnicas.
+- **Alta Performance**: Uso de Next.js App Router e otimização de ativos estáticos para carregamento instantâneo.
+- **Dark Mode Nativo**: Interface pensada para conforto visual e estética técnica.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/vibe-next.git
-cd vibe-next
-```
+## 🛠️ Como Executar o Projeto
 
-### 2. Install dependencies
+Certifique-se de ter o **Node.js 20.9** ou superior instalado.
 
-```bash
-npm install
-```
+1. **Instalar dependências:**
+   ```bash
+   npm install
+   ```
 
-Or use **pnpm** or **yarn** if you prefer.
+2. **Iniciar o servidor de desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
 
-### 3. Run the development server
+3. **Gerar versão de produção:**
+   ```bash
+   npm run build
+   ```
 
-```bash
-npm run dev
-```
+## 📁 Estrutura do Projeto
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+- `app/`: Contém as páginas, layout global e arquivos de estilo (App Router).
+- `lib/`: Configurações de tema e utilitários.
+- `public/`: Ativos estáticos (Logotipos, Favicon, Imagens de projetos).
 
-## Available Scripts
+---
 
-| Command | Description |
-|--------|-------------|
-| `npm run dev` | Start the development server (Turbopack) |
-| `npm run build` | Build for production |
-| `npm run start` | Start the production server (run after `build`) |
-| `npm run lint` | Run ESLint |
-
-> **Note:** If `next lint` reports “Invalid project directory”, run it from the project root or use your IDE’s ESLint integration.
-
-## Configuration
-
-### Next.js config
-
-Settings live in `next.config.mjs`. To allow more image domains (e.g. for `<Image>`), add them to `images.remotePatterns`:
-
-```js
-images: {
-  remotePatterns: [
-    { protocol: 'https', hostname: 'images.unsplash.com' },
-    // Add more hosts as needed
-  ],
-},
-```
-
-### Path alias
-
-Use the `@/` alias (see `tsconfig.json`) to import from the project root:
-
-```ts
-import { getThemeVars } from '@/lib/theme';
-```
-
-### Theme
-
-Primary and secondary colors are defined in `lib/theme.ts`. The in-app settings panel lets users switch dark/light mode, gradient/flat style, and primary color (saved in cookies).
-
-### Environment variables
-
-None are required. If you add any:
-
-1. Create `.env.local` (do not commit it).
-2. Add `.env.example` with variable names only, so others know what to set.
-3. Use the `NEXT_PUBLIC_` prefix for values needed in the browser.
-
-## Project structure
-
-```
-vibe-next/
-├── app/                 # App Router
-│   ├── globals.css      # Global styles and design tokens
-│   ├── icon.tsx         # Favicon (Next.js metadata)
-│   ├── layout.tsx       # Root layout
-│   └── page.tsx         # Home page
-├── lib/
-│   └── theme.ts         # Theme config (primary/secondary colors)
-├── public/              # Static assets (favicon.ico, etc.)
-├── .eslintrc.json       # ESLint (Next.js config)
-├── next.config.mjs
-├── tsconfig.json
-└── package.json
-```
-
-## Tech stack
-
-- **Next.js 16** — App Router, Turbopack by default
-- **React 19**
-- **TypeScript** (`.tsx` / `.ts`)
-- **Lucide React** — icons
-
-## Contributing
-
-Contributions are welcome. Open an issue or submit a pull request. When you add dependencies or config, update this README (and `.env.example` if you introduce env vars).
-
-## License
-
-[Add your license here, e.g. MIT, Apache 2.0]
+© 2026 Avocado Tech — Todos os direitos reservados.

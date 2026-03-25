@@ -10,15 +10,15 @@
 export const theme = {
   /** Primary color (HSL) */
   primary: {
-    hue: 250,
-    saturation: 90,
-    lightness: 58,
+    hue: 185,
+    saturation: 85,
+    lightness: 48,
   },
   /** Secondary color (HSL) */
   secondary: {
-    hue: 340,
-    saturation: 82,
-    lightness: 58,
+    hue: 320,
+    saturation: 80,
+    lightness: 55,
   },
 } as const;
 
