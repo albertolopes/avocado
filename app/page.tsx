@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ArrowUp,
   ArrowRight,
@@ -115,7 +115,6 @@ export default function HomePage() {
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [colorStyle, setColorStyle] = useState<'gradient' | 'flat'>('gradient');
   const [activeColor, setActiveColor] = useState(185);
@@ -137,10 +136,10 @@ export default function HomePage() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 50);
-      setShowBackToTop(window.scrollY > 400);
+      setShowBackToTop(window.scrollY > 500);
     };
-    window.addEventListener('scroll', onScroll);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -169,7 +168,7 @@ export default function HomePage() {
 
   return (
     <>
-      <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
+      <header className="header">
         <div className="container header__inner">
           <a href="#" className="header__logo">
             <img src="/logo.png" alt="Avocado Logo" width={80} height={80} />
