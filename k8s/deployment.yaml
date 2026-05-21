@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: institucional-web
-  namespace: institucional-web
+  name: institucional
+  namespace: institucional
 spec:
   replicas: 1
   selector:
