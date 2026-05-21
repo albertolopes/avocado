@@ -1,0 +1,67 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375
+  GIT_STRATEGY: fetch
+  KUBE_NAMESPACE: "institucional"
+  IMAGE_PULL_SECRET: "gitlab-registry-credentials"
+  NEXT_PUBLIC_API_BASE: "https://avocadotech.site"
+
+build:
+  stage: build
+  tags:
+    - desenv
+  image: docker:25.0.5
+  services:
+    - name: docker:25.0.5-dind
+      alias: docker
+      variables:
+        HEALTHCHECK_TCP_PORT: "2375"
+      command: [
+        "--tls=false", 
+        "--host=tcp://0.0.0.0:2375", 
+        "--mtu=1200",
+        "--max-concurrent-uploads=1",
+        "--max-concurrent-downloads=1",
+        "--insecure-registry=registry.avocadotech.institucional"
+      ]
+    - name: alpine/socat:latest
+      alias: registry.avocadotech.site
+      command: [
+        "tcp-listen:80,fork,reuseaddr",
+        "tcp-connect:gitlab-registry.gitlab.svc.cluster.local:5000"
+      ]
+  timeout: 1h
+  before_script:
+    - until docker info; do echo "Aguardando Docker daemon..."; sleep 3; done
+    - docker run --rm --network host curlimages/curl:8.11.1 -fsS -i "http://$CI_REGISTRY/v2/" || true
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "http://$CI_REGISTRY" --username "$CI_REGISTRY_USER" --password-stdin
+  script:
+    - export APP_IMAGE="$CI_REGISTRY_IMAGE:${CI_COMMIT_SHORT_SHA}"
+    - docker build --build-arg NEXT_PUBLIC_API_BASE="$NEXT_PUBLIC_API_BASE" -t "$APP_IMAGE" .
+    - docker --debug push "$APP_IMAGE"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+deploy:
+  stage: deploy
+  tags:
+    - desenv
+  image: bitnami/kubectl:latest
+  timeout: 30m
+  script:
+    - mkdir -p $HOME/.kube
+    - echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
+    - export APP_IMAGE="$CI_REGISTRY_IMAGE:${CI_COMMIT_SHORT_SHA}"
+    - kubectl create namespace "$KUBE_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+    - kubectl create secret docker-registry "$IMAGE_PULL_SECRET" --docker-server="$CI_REGISTRY" --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email="gitlab-ci@$CI_SERVER_HOST" -n "$KUBE_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+    - sed -i "s|IMAGE_PLACEHOLDER|${APP_IMAGE}|g" k8s/deployment.yaml
+    - kubectl apply -f k8s/ -n "$KUBE_NAMESPACE"
+    - kubectl rollout status deployment/slotto-web -n "$KUBE_NAMESPACE" --timeout=20m
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: manual
