@@ -61,7 +61,7 @@ deploy:
     - kubectl create secret docker-registry "$IMAGE_PULL_SECRET" --docker-server="$CI_REGISTRY" --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email="gitlab-ci@$CI_SERVER_HOST" -n "$KUBE_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
     - sed -i "s|IMAGE_PLACEHOLDER|${APP_IMAGE}|g" k8s/deployment.yaml
     - kubectl apply -f k8s/ -n "$KUBE_NAMESPACE"
-    - kubectl rollout status deployment/slotto-web -n "$KUBE_NAMESPACE" --timeout=20m
+    - kubectl rollout status deployment/institucional -n "$KUBE_NAMESPACE" --timeout=20m
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: manual
