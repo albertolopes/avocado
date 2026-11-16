@@ -483,7 +483,7 @@ export default function HomePage() {
                 {
                   title: 'Slotto — Agendamentos Online',
                   cat: 'Plataforma SaaS de Agendamentos',
-                  img: '/slotto-logo.png',
+                  img: '/slotto.png',
                   tags: ['Sistemas', 'Apps', 'Backend'],
                   link: 'https://slotto.com.br/',
                 },
