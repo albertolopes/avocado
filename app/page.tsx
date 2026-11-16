@@ -481,6 +481,13 @@ export default function HomePage() {
             <div className="projects__grid">
               {[
                 {
+                  title: 'Slotto — Agendamentos Online',
+                  cat: 'Plataforma SaaS de Agendamentos',
+                  img: '/slotto.svg',
+                  tags: ['Sistemas', 'Apps', 'Backend'],
+                  link: 'https://slotto.com.br/',
+                },
+                {
                   title: 'Aplicativo Sebrae',
                   cat: 'Finanças & Negócios',
                   img: '/sebrae.png',

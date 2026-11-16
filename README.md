@@ -17,7 +17,7 @@ O projeto utiliza o que há de mais moderno no ecossistema web:
 - **Identidade Visual Premium**: Paleta de cores exclusiva baseada em **Ciano (Cyan)** e **Magenta**, aplicada harmonicamente em todo o site.
 - **Totalmente Responsivo**: Experiência otimizada para desktops, tablets e dispositivos móveis (layout "travado" contra rolagem horizontal).
 - **SEO Otimizado**: Metadados configurados para indexação no Google, incluindo OpenGraph e Twitter Cards para compartilhamento social impactante.
-- **Portfólio de Projetos Reais**: Seção dedicada a projetos de grande porte como **Qualicorp**, **Sebrae** e **Apemigos**, com links externos e descrições técnicas.
+- **Portfólio de Projetos Reais**: Seção dedicada a projetos de grande porte como **Slotto**, **Qualicorp**, **Sebrae** e **Apemigos**, com links externos e descrições técnicas.
 - **Alta Performance**: Uso de Next.js App Router e otimização de ativos estáticos para carregamento instantâneo.
 - **Dark Mode Nativo**: Interface pensada para conforto visual e estética técnica.
 

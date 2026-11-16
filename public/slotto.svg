@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">Slotto — Agendamentos Online</title>
+  <desc id="desc">Ilustração da tela de acesso do Slotto, com logotipo azul e roxo e formulário de entrada.</desc>
+  <defs>
+    <linearGradient id="brand" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2070FF"/>
+      <stop offset="0.52" stop-color="#4C44FF"/>
+      <stop offset="1" stop-color="#9745F5"/>
+    </linearGradient>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F0F1FA"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#20223F" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#background)"/>
+  <circle cx="110" cy="95" r="155" fill="#EFEAFF" opacity="0.8"/>
+  <circle cx="940" cy="605" r="170" fill="#E7EDFF" opacity="0.8"/>
+  <g transform="translate(80 170)">
+    <path d="M 20 71 C 56 16 123 2 126 24 C 127 39 89 53 65 67 C 109 51 137 56 126 76 C 118 90 65 113 22 127 C 55 99 91 80 93 72 C 69 71 42 77 20 71 Z" fill="url(#brand)"/>
+    <text x="89" y="112" font-family="Arial, Helvetica, sans-serif" font-size="81" font-weight="700" letter-spacing="-5" fill="#0B1329">lotto</text>
+    <text x="72" y="141" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="4.1" font-weight="700" fill="#7A8195">AGENDAMENTOS ONLINE</text>
+  </g>
+  <text x="83" y="394" fill="#182036" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Sua agenda, mais simples.</text>
+  <text x="83" y="435" fill="#414A60" font-family="Arial, Helvetica, sans-serif" font-size="20">Mais tempo para cuidar do</text>
+  <text x="83" y="465" fill="#414A60" font-family="Arial, Helvetica, sans-serif" font-size="20">que realmente importa.</text>
+  <rect x="83" y="503" width="191" height="10" rx="5" fill="url(#brand)" opacity="0.86"/>
+  <g filter="url(#shadow)">
+    <rect x="511" y="76" width="385" height="503" rx="19" fill="#FFFFFF"/>
+  </g>
+  <text x="538" y="119" fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700">Entre no Slotto</text>
+  <text x="538" y="143" fill="#5D6474" font-family="Arial, Helvetica, sans-serif" font-size="12">Uma conta para agendamentos e empresas.</text>
+  <rect x="538" y="162" width="331" height="101" rx="12" fill="#E9E8FF"/>
+  <rect x="551" y="176" width="11" height="14" rx="2" fill="#7269ED"/>
+  <path d="M 554 181 h5 M 554 185 h5" stroke="#FFFFFF" stroke-width="1.3"/>
+  <text x="570" y="189" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#5E57D9">Painel da empresa</text>
+  <text x="552" y="212" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6963DF">Acesse sua conta para gerenciar</text>
+  <text x="552" y="228" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6963DF">sua empresa e seus agendamentos.</text>
+  <text x="552" y="249" font-family="Arial, Helvetica, sans-serif" font-size="11" text-decoration="underline" fill="#5E57D9">Ir para meus agendamentos</text>
+  <text x="538" y="292" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#111827">Email</text>
+  <rect x="538" y="303" width="331" height="38" rx="11" fill="#FFFFFF" stroke="#E6E7EC"/>
+  <text x="552" y="327" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#9BA1AE">seu@email.com</text>
+  <text x="538" y="366" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#111827">Senha</text>
+  <rect x="538" y="376" width="331" height="38" rx="11" fill="#FFFFFF" stroke="#E6E7EC"/>
+  <text x="552" y="400" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#B4B6C1">••••••••</text>
+  <rect x="538" y="431" width="331" height="44" rx="11" fill="#7168E6"/>
+  <text x="703" y="458" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle" font-weight="700" fill="#FFFFFF">Entrar e acessar painel</text>
+  <rect x="538" y="484" width="331" height="44" rx="11" fill="#FFFFFF" stroke="#7168E6" stroke-width="1.4"/>
+  <text x="703" y="511" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle" font-weight="700" fill="#7168E6">Continuar com Google</text>
+  <text x="703" y="553" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#6B7180">Ainda não tem conta?  <tspan fill="#7168E6" font-weight="700">Criar nova conta</tspan></text>
+</svg>
